@@ -5,83 +5,89 @@ const API_URL =
 const card = document.querySelector("#giftCard");
 const credentials = document.querySelector("#credentials");
 const dialog = document.querySelector("#accountDialog");
+const dialogCopy = document.querySelector("#dialogCopy");
 const choiceActions = document.querySelector("#choiceActions");
 const passwordPanel = document.querySelector("#passwordPanel");
 const successPanel = document.querySelector("#successPanel");
 const accessPassword = document.querySelector("#accessPassword");
+const submitPassword = document.querySelector("#submitPassword");
+const issueButton = document.querySelector("#issueButton");
 const formMessage = document.querySelector("#formMessage");
 const hint = document.querySelector("#hint");
 
-card.addEventListener("click", () => {
-  const isFlipped = card.classList.toggle("flipped");
+const HINTS = {
+  front: "Tap the card to reveal your surprise",
+  back: "Tap the hidden details to open your gift",
+  unlocked: "Enjoy — and happy birthday!"
+};
 
-  card.setAttribute(
-    "aria-pressed",
-    String(isFlipped)
-  );
-
-  hint.textContent = isFlipped
-    ? "Tap the hidden details to open your gift"
-    : "Tap the card to reveal your surprise";
-});
-
-card.addEventListener("keydown", (event) => {
-  const isActivationKey =
-    event.key === "Enter" ||
-    event.key === " ";
-
-  if (isActivationKey && event.target === card) {
-    event.preventDefault();
-    card.click();
+function refreshHint() {
+  if (!card.classList.contains("flipped")) {
+    hint.textContent = HINTS.front;
+  } else if (card.classList.contains("unlocked")) {
+    hint.textContent = HINTS.unlocked;
+  } else {
+    hint.textContent = HINTS.back;
   }
-});
-
-function openChoices(event) {
-  event.stopPropagation();
-
-  choiceActions.hidden = false;
-  passwordPanel.hidden = true;
-  successPanel.hidden = true;
-
-  document.querySelector("#dialogCopy").hidden = false;
-
-  dialog.showModal();
 }
 
-credentials.addEventListener(
-  "click",
-  openChoices
-);
+/* ------------------------------------------------------------ card flip */
 
-credentials.addEventListener(
-  "keydown",
-  (event) => {
-    if (
-      event.key === "Enter" ||
-      event.key === " "
-    ) {
-      event.preventDefault();
-      openChoices(event);
-    }
-  }
-);
+function flipCard() {
+  const isFlipped = card.classList.toggle("flipped");
+  card.setAttribute("aria-pressed", String(isFlipped));
+  refreshHint();
+}
 
-document
-  .querySelector("#revealButton")
-  .addEventListener("click", () => {
-    choiceActions.hidden = true;
-    passwordPanel.hidden = false;
-    formMessage.textContent = "";
-    accessPassword.focus();
-  });
+card.addEventListener("click", flipCard);
 
-document
-  .querySelector("#backButton")
-  .addEventListener("click", () => {
-    passwordPanel.hidden = true;
-    choiceActions.hidden = false;
-    formMessage.textContent = "";
-  });
+card.addEventListener("keydown", (event) => {
+  if (event.target !== card) return;
+  if (event.key !== "Enter" && event.key !== " ") return;
+
+  event.preventDefault();
+  flipCard();
+});
+
+// Controls on the back of the card act on their own; they must not also flip it.
+[credentials, document.querySelector("#primeLogin")].forEach((element) => {
+  element.addEventListener("click", (event) => event.stopPropagation());
+});
+
+/* --------------------------------------------------------- the dialogue */
+
+function showPanel(panel) {
+  choiceActions.hidden = panel !== choiceActions;
+  passwordPanel.hidden = panel !== passwordPanel;
+  successPanel.hidden = panel !== successPanel;
+  dialogCopy.hidden = panel === successPanel;
+}
+
+credentials.addEventListener("click", () => {
+  formMessage.textContent = "";
+  accessPassword.value = "";
+  showPanel(choiceActions);
+  dialog.showModal();
+});
+
+document.querySelector("#revealButton").addEventListener("click", () => {
+  showPanel(passwordPanel);
+  accessPassword.focus();
+});
+
+document.querySelector("#backButton").addEventListener("click", () => {
+  formMessage.textContent = "";
+  showPanel(choiceActions);
+});
+
+// Always reopen on the first panel, however the dialogue was dismissed.
+dialog.addEventListener("close", () => {
+  showPanel(choiceActions);
+  accessPassword.value = "";
+  formMessage.textContent = "";
+});
+
+/* ---------------------------------------------------------- the backend */
 
 async function apiRequest(payload) {
   if (!API_URL) {
@@ -91,13 +97,19 @@ async function apiRequest(payload) {
     );
   }
 
-  const response = await fetch(API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "text/plain;charset=utf-8"
-    },
-    body: JSON.stringify(payload)
-  });
+  let response;
+  try {
+    response = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+  } catch (networkError) {
+    throw new Error(
+      "No connection to the gift service. " +
+      "Please check your internet and try again."
+    );
+  }
 
   if (!response.ok) {
     throw new Error(
@@ -110,8 +122,7 @@ async function apiRequest(payload) {
 
   if (!data.ok) {
     throw new Error(
-      data.message ||
-      "Something went wrong. Please try again."
+      data.message || "Something went wrong. Please try again."
     );
   }
 
@@ -119,20 +130,17 @@ async function apiRequest(payload) {
 }
 
 async function unlock() {
-  const button =
-    document.querySelector("#submitPassword");
-
-  const passphrase =
-    accessPassword.value.trim();
+  const passphrase = accessPassword.value.trim();
 
   if (!passphrase) {
-    formMessage.textContent =
-      "Please enter the gift password.";
+    formMessage.textContent = "Please enter the gift password.";
+    accessPassword.focus();
     return;
   }
 
-  button.disabled = true;
-  formMessage.textContent = "Checking…";
+  submitPassword.disabled = true;
+  submitPassword.textContent = "Checking…";
+  formMessage.textContent = "";
 
   try {
     const data = await apiRequest({
@@ -140,87 +148,51 @@ async function unlock() {
       passphrase: passphrase
     });
 
-    document.querySelector(
-      "#username"
-    ).textContent = data.username;
-
-    document.querySelector(
-      "#accountPassword"
-    ).textContent = data.password;
-
-    document.querySelector(
-      "#profile"
-    ).textContent = data.profile || "1";
+    document.querySelector("#username").textContent = data.username;
+    document.querySelector("#accountPassword").textContent = data.password;
+    document.querySelector("#profile").textContent = data.profile || "1";
 
     card.classList.add("unlocked");
+    refreshHint();
     dialog.close();
-    accessPassword.value = "";
-    formMessage.textContent = "";
   } catch (error) {
-    formMessage.textContent =
-      error.message;
+    formMessage.textContent = error.message;
   } finally {
-    button.disabled = false;
+    submitPassword.disabled = false;
+    submitPassword.textContent = "Unlock";
   }
 }
 
-document
-  .querySelector("#submitPassword")
-  .addEventListener("click", unlock);
+submitPassword.addEventListener("click", unlock);
 
-accessPassword.addEventListener(
-  "keydown",
-  (event) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      unlock();
-    }
+accessPassword.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter") return;
+
+  event.preventDefault();
+  unlock();
+});
+
+issueButton.addEventListener("click", async () => {
+  issueButton.disabled = true;
+  issueButton.textContent = "Checking account…";
+
+  try {
+    const data = await apiRequest({ action: "report" });
+
+    document.querySelector("#successTitle").textContent =
+      data.status === "solved"
+        ? "New account details are ready"
+        : "Issue reported";
+
+    document.querySelector("#successMessage").textContent = data.message;
+    showPanel(successPanel);
+  } catch (error) {
+    formMessage.textContent = "";
+    window.alert(error.message);
+  } finally {
+    issueButton.disabled = false;
+    issueButton.textContent = "Report an account issue";
   }
-);
+});
 
-document
-  .querySelector("#issueButton")
-  .addEventListener("click", async () => {
-    const button =
-      document.querySelector("#issueButton");
-
-    button.disabled = true;
-    button.textContent = "Checking account…";
-
-    try {
-      const data = await apiRequest({
-        action: "report"
-      });
-
-      choiceActions.hidden = true;
-
-      document.querySelector(
-        "#dialogCopy"
-      ).hidden = true;
-
-      successPanel.hidden = false;
-
-      document.querySelector(
-        "#successTitle"
-      ).textContent =
-        data.status === "solved"
-          ? "New account details updated"
-          : "Issue reported";
-
-      document.querySelector(
-        "#successMessage"
-      ).textContent = data.message;
-    } catch (error) {
-      window.alert(error.message);
-    } finally {
-      button.disabled = false;
-      button.textContent =
-        "Report an account issue";
-    }
-  });
-
-document
-  .querySelector("#primeLogin")
-  .addEventListener("click", (event) => {
-    event.stopPropagation();
-  });
+refreshHint();

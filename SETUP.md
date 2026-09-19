@@ -16,7 +16,7 @@ The website is static; a Google Sheet and its bound Apps Script safely hold the 
 3. Return to Apps Script, open `Code.gs`, select everything already in the editor, delete it, and paste the copied JavaScript.
 4. **Do not paste** a command such as `git clone`, `git pull`, a line beginning with `git`, or Markdown backticks (`` ``` ``). Those are not JavaScript. The error `Unexpected identifier 'git' line: 1` means a Git command was accidentally pasted into `Code.gs`; clear the editor and repeat step 2 using the **Raw** file.
 5. Confirm the first line in the editor starts with `/**` and not `git` or `` ```javascript ``.
-6. Change `YOUR_EMAIL@gmail.com` to the address that should receive issue notifications.
+6. Change `YOUR_EMAIL@gmail.com` to the address that should receive issue notifications. If you leave the placeholder in place, the report email goes to the Google account that owns the script instead.
 7. Save. The unlock phrase is `bethday`; matching is case-insensitive. You can change `GIFT_PASSPHRASE` if desired.
 
 ### Fix for the exact error shown in the screenshot
@@ -51,6 +51,7 @@ If line 1 still starts with `(cd`, `git`, `diff`, `index`, `---`, `+++`, or `@@`
 4. Click **Deploy**, grant Spreadsheet and email permissions, and copy the URL ending in `/exec`.
 5. Paste that URL between the quotes in `API_URL` near the top of [`script.js`](script.js).
 6. If you edit `Code.gs` later, use **Deploy → Manage deployments → Edit**, select **New version**, and deploy again. The `/exec` URL normally remains the same.
+7. The report email contains a direct link back to this spreadsheet. The first deployment after adding it may ask you to grant one extra permission (your email address); accept it so the notification can be addressed and sent.
 
 The included login button uses Amazon Australia's Prime Video sign-in URL. If the recipient uses a different Amazon region, replace the `href` on `#primeLogin` in `index.html` with that region's Prime Video sign-in link.
 
@@ -69,10 +70,10 @@ If there is no pull request or those files are not in it, use Option B.
 
 ### Option B — upload through GitHub
 
-1. Download/copy these repository files: `index.html`, `styles.css`, `script.js`, `README.md`, and `SETUP.md`.
+1. Download/copy these repository files: `index.html`, `styles.css`, `script.js`, `README.md`, `SETUP.md`, and the whole `assets` folder (`assets/card-art.svg`, `assets/prime-video.png`, `assets/wallpaper.svg`).
 2. On the GitHub repository's **Code** tab, make sure the branch selector says `main`.
 3. Select **Add file → Upload files**.
-4. Upload the five files into the repository root—not inside another folder. The path must be exactly `/index.html`, with lowercase letters.
+4. Upload the five root files into the repository root—not inside another folder. The path must be exactly `/index.html`, with lowercase letters. Drag the `assets` folder across as a folder so the three image files land at `/assets/…`; the card shows no ribbon, bow, or Prime Video logo without them.
 5. Under **Commit changes**, keep **Commit directly to the `main` branch** selected and press **Commit changes**.
 6. Verify the Code tab now lists `index.html`. Do not continue while it still lists only `.gitkeep`.
 
@@ -87,6 +88,7 @@ If there is no pull request or those files are not in it, use Option B.
 ### If Pages still says 404
 
 - Confirm `https://github.com/iamarasinghe96/bethday/blob/main/index.html` opens a file rather than a 404.
+- Confirm `https://github.com/iamarasinghe96/bethday/tree/main/assets` lists the three artwork files.
 - Confirm the filename is exactly lowercase `index.html`, not `Index.html`, `index.html.txt`, or a file inside a second `bethday` folder.
 - Confirm Pages is publishing `main` and `/ (root)`.
 - Check **Actions → pages build and deployment** for an error. A green deployment cannot publish `index.html` if that file is absent from `main`.
@@ -95,8 +97,8 @@ GitHub Pages hosts only the front end. The Google Sheet remains restricted, whil
 
 ## Day-to-day workflow
 
-- **Reveal:** Beth taps the card, taps the masked credentials, selects **Reveal account details**, and enters `bethday` in any letter case. The Prime Video logo then minimizes, the credentials appear, and the card shows a direct sign-in button plus the profile from `C2`.
-- **Report:** **Report an account issue** writes `issue` to `D2` and emails the configured address.
+- **Reveal:** Beth taps the card, taps the masked credentials, selects **Reveal account details**, and enters `bethday` in any letter case. The Prime Video logo then minimizes, the credentials appear, and the card shows the profile from `C2` plus a direct sign-in button.
+- **Report:** **Report an account issue** writes `issue` to `D2` and emails the configured address. That email contains a link straight to this spreadsheet's **Account** tab with `A2` selected, so the account can be swapped from a phone in a couple of taps.
 - **Resolve:** Replace `A2` and `B2`, update the profile in `C2` if needed, then type `solved` into `D2`.
 - **Notify:** While `D2` says `solved`, Beth sees “New account details updated” whenever she checks the issue button. Clear `D2` manually after she has received the update; the report button will then create a new issue normally.
 

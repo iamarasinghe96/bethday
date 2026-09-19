@@ -14,7 +14,8 @@ function doGet() {
 function doPost(event) {
   try {
     const request = JSON.parse(event.postData.contents || '{}');
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+    const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = spreadsheet.getSheetByName(SHEET_NAME);
     if (!sheet) throw new Error('The Account sheet was not found.');
 
     const row = sheet.getRange(2, 1, 1, 4).getDisplayValues()[0];
@@ -36,12 +37,7 @@ function doPost(event) {
       }
 
       sheet.getRange(2, 4).setValue('issue');
-      MailApp.sendEmail({
-        to: NOTIFICATION_EMAIL,
-        subject: 'Prime Video gift card — account issue',
-        htmlBody: '<p>An account issue was reported from Beth’s gift card.</p>' +
-          '<p>Open the Google Sheet, replace the username/password, and set <b>Status</b> to <b>solved</b>.</p>'
-      });
+      sendIssueEmail_(spreadsheet, sheet);
       return json_({ ok: true, status: 'issue', message: 'The sender has been notified and will update the account details soon.' });
     }
 
@@ -49,6 +45,54 @@ function doPost(event) {
   } catch (error) {
     return json_({ ok: false, message: error.message });
   }
+}
+
+/**
+ * Emails the notification address, with a link that opens the Account sheet
+ * straight on the row that needs new credentials.
+ */
+function sendIssueEmail_(spreadsheet, sheet) {
+  const sheetUrl = sheetLink_(spreadsheet, sheet);
+  const reportedAt = Utilities.formatDate(
+    new Date(), spreadsheet.getSpreadsheetTimeZone(), "d MMMM yyyy 'at' h:mm a");
+
+  const plainBody =
+    'An account issue was reported from Beth’s gift card on ' + reportedAt + '.\n\n' +
+    'Open the Google Sheet:\n' + sheetUrl + '\n\n' +
+    'Replace the username in A2 and the password in B2, update the profile in C2 ' +
+    'if it changed, then type "solved" into D2. Beth sees the new details the next ' +
+    'time she unlocks the card.';
+
+  const htmlBody =
+    '<p>An account issue was reported from Beth&rsquo;s gift card on ' + reportedAt + '.</p>' +
+    '<p><a href="' + sheetUrl + '">Open the Google Sheet</a><br>' +
+    '<span style="font-size:12px;color:#666">' + sheetUrl + '</span></p>' +
+    '<p>Replace the username in <b>A2</b> and the password in <b>B2</b>, update the ' +
+    'profile in <b>C2</b> if it changed, then type <b>solved</b> into <b>D2</b>. ' +
+    'Beth sees the new details the next time she unlocks the card.</p>';
+
+  MailApp.sendEmail({
+    to: notificationAddress_(),
+    subject: 'Prime Video gift card — account issue',
+    body: plainBody,
+    htmlBody: htmlBody
+  });
+}
+
+/** Deep link to the Account tab, with cell A2 selected. */
+function sheetLink_(spreadsheet, sheet) {
+  return spreadsheet.getUrl().replace(/[?#].*$/, '') +
+    '#gid=' + sheet.getSheetId() + '&range=A2';
+}
+
+/** Falls back to the account running the script if the constant was left unedited. */
+function notificationAddress_() {
+  if (NOTIFICATION_EMAIL && NOTIFICATION_EMAIL.indexOf('YOUR_EMAIL') === -1) {
+    return NOTIFICATION_EMAIL;
+  }
+  const owner = Session.getEffectiveUser().getEmail();
+  if (!owner) throw new Error('Set NOTIFICATION_EMAIL in Code.gs to the address that should receive issue reports.');
+  return owner;
 }
 
 function json_(value) {
