@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <div class="bow-layer" id="bowLayer" aria-hidden="true"></div>
+
     <main class="page-shell">
       <header class="page-head">
         <p class="eyebrow">A little something for</p>
@@ -32,15 +34,21 @@
               <img class="prime-logo" src="assets/prime-video.png" alt="Prime Video" width="960" height="296" />
 
               <div class="back-details">
-                <button class="credentials" id="credentials" type="button" aria-label="Open your gift and reveal the account details">
+                <div class="credentials" id="credentials">
                   <span class="cred-label">Username</span>
                   <span class="cred-value" id="username">••••••••••••</span>
+                  <button class="cred-copy" type="button" data-copy="username" aria-label="Copy the username"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><g class="icon-copy"><rect x="7.25" y="7.25" width="9.5" height="11" rx="2.5"/><path d="M12.75 4.75V4a2 2 0 0 0-2-2H5.25a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2H4"/></g><path class="icon-check" d="m4.75 10.5 3.75 3.75 7-9"/></svg></button>
+
                   <span class="cred-label">Password</span>
                   <span class="cred-value" id="accountPassword">••••••••</span>
+                  <button class="cred-copy" type="button" data-copy="accountPassword" aria-label="Copy the password"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><g class="icon-copy"><rect x="7.25" y="7.25" width="9.5" height="11" rx="2.5"/><path d="M12.75 4.75V4a2 2 0 0 0-2-2H5.25a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2H4"/></g><path class="icon-check" d="m4.75 10.5 3.75 3.75 7-9"/></svg></button>
+
                   <span class="cred-label cred-profile-label">Profile</span>
                   <span class="cred-value cred-profile-value" id="profile">1</span>
+
                   <span class="cred-hint">Tap to open your gift</span>
-                </button>
+                  <button class="cred-unlock" id="unlockTrigger" type="button" aria-label="Open your gift and reveal the account details"></button>
+                </div>
 
                 <div class="unlocked-details" id="unlockedDetails">
                   <a class="prime-login" id="primeLogin" href="https://www.amazon.com.au/ap/signin?openid.pape.max_auth_age=0&amp;openid.return_to=https%3A%2F%2Ffe.primevideo.com%2Fauth%2Freturn%3F_t%3D1sg8pihkSHI9hRGXbrYwIqm6G6Ox7RtdgdJ_um0ol-sFUCAAAAAQAAAABqrg5VcmF3AAAAAPgWC9WfHH8iB-olH_E9xQ%26ref_%3Dav_auth_ap%26location%3D%2F%3Fref_%253Datv_auth_pre&amp;openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&amp;openid.assoc_handle=amzn_prime_video_sso_aus&amp;openid.mode=checkid_setup&amp;countryCode=AU&amp;siteState=356-7994393-7486213&amp;language=en_US&amp;openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&amp;openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0" target="_blank" rel="noopener noreferrer">
@@ -50,12 +58,15 @@
                 </div>
               </div>
             </div>
+
+            <span class="card-sheen" aria-hidden="true"></span>
           </div>
         </div>
       </section>
 
       <footer class="page-foot">
         <p class="hint" id="hint" aria-live="polite">Tap the card to reveal your surprise</p>
+        <button class="report-link" id="reportTrigger" type="button" hidden>Something not working?</button>
         <p class="signature">With love, Guvani &amp; Indika</p>
       </footer>
     </main>

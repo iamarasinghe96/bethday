@@ -50,8 +50,73 @@ body::before {
     );
 }
 
+/* --------------------------------------------------------- falling bows */
+/*
+ * Decorative only. Each bow carries its own column, drift, size, spin and
+ * duration as custom properties, seeded in script.js; negative delays start
+ * part-way through so the fall is already underway on the first paint.
+ */
+.bow-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.bow {
+  position: absolute;
+  top: -12vh;
+  left: var(--x);
+  font-size: var(--size);
+  line-height: 1;
+  opacity: 0;
+  animation: bow-fall var(--dur) var(--delay) linear infinite;
+  will-change: transform, opacity;
+}
+
+.bow-burst {
+  animation-iteration-count: 1;
+}
+
+@keyframes bow-fall {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: var(--peak, 0.7);
+  }
+
+  88% {
+    opacity: var(--peak, 0.7);
+  }
+
+  100% {
+    transform: translate3d(var(--drift), 118vh, 0) rotate(var(--spin));
+    opacity: 0;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+@keyframes card-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(42px) scale(0.92) rotate(-2deg);
+  }
+}
+
 /* ------------------------------------------------------------ page layout */
 .page-shell {
+  position: relative;
+  z-index: 1;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
@@ -60,6 +125,10 @@ body::before {
   gap: clamp(22px, 4.4vh, 40px);
   padding: clamp(24px, 5vh, 48px) 20px;
   text-align: center;
+}
+
+.page-head {
+  animation: rise-in 0.7s 0.05s both ease-out;
 }
 
 .eyebrow {
@@ -88,6 +157,7 @@ h1 span {
 }
 
 .page-foot {
+  animation: rise-in 0.7s 0.5s both ease-out;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -114,6 +184,7 @@ h1 span {
   perspective: 1500px;
   -webkit-perspective: 1500px;
   filter: drop-shadow(0 calc(var(--card-w) * 0.03) calc(var(--card-w) * 0.03) rgba(78, 14, 33, 0.34));
+  animation: card-arrive 0.95s 0.15s both cubic-bezier(0.2, 0.85, 0.25, 1);
 }
 
 .gift-card {
@@ -122,6 +193,18 @@ h1 span {
   position: relative;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+}
+
+/* The card lifts towards the viewer through the middle of the turn, so the
+   flip reads as picking the card up rather than spinning it in place. */
+.gift-card.flipping {
+  animation: card-lift 0.9s cubic-bezier(0.35, 0, 0.35, 1);
+}
+
+@keyframes card-lift {
+  50% {
+    transform: scale(1.07) translateY(-2.5%);
+  }
 }
 
 .gift-card:focus-visible {
@@ -226,7 +309,7 @@ h1 span {
 }
 
 .gift-card.unlocked .prime-logo {
-  width: 55%;
+  width: 48%;
 }
 
 .back-details {
@@ -235,53 +318,152 @@ h1 span {
 }
 
 /* The credential block is one grid: labels in a fixed first column, values in
-   the second, so nothing shifts when the real values replace the dots. */
+   the second, copy buttons in a third, so nothing shifts when the real values
+   replace the dots. */
 .credentials {
+  position: relative;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  column-gap: calc(var(--card-w) * 0.03);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  column-gap: calc(var(--card-w) * 0.022);
   row-gap: calc(var(--card-w) * 0.009);
   align-items: baseline;
   align-self: stretch;
-  margin-inline: calc(var(--card-w) * -0.022);
-  padding: calc(var(--card-w) * 0.016) calc(var(--card-w) * 0.022);
+  margin-inline: calc(var(--card-w) * -0.016);
+  padding: calc(var(--card-w) * 0.015) calc(var(--card-w) * 0.016);
   border: 0;
   border-radius: calc(var(--card-w) * 0.018);
   color: inherit;
   background: transparent;
   font-family: inherit;
   text-align: left;
-  cursor: pointer;
   transition: background 0.2s ease;
 }
 
-.gift-card.flipped .credentials:hover,
-.credentials:focus-visible {
+.gift-card.flipped .credentials:has(.cred-unlock:hover),
+.gift-card.flipped .credentials:has(.cred-unlock:focus-visible) {
   background: #f6ead2;
-  outline: none;
+}
+
+/* Locked, the whole block is one big tap target; unlocked, it steps aside so
+   the copy buttons can be reached. */
+.cred-unlock {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  border-radius: inherit;
+  background: none;
+  cursor: pointer;
+}
+
+.gift-card.unlocked .cred-unlock {
+  display: none;
 }
 
 .cred-label {
+  grid-column: 1;
   color: var(--muted);
-  font-size: calc(var(--card-w) * 0.0215);
+  font-size: calc(var(--card-w) * 0.02);
   font-weight: 700;
-  letter-spacing: 0.17em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   white-space: nowrap;
 }
 
 .cred-value {
+  grid-column: 2;
   color: var(--ink);
   font-family: var(--mono);
-  font-size: calc(var(--card-w) * 0.031);
+  font-size: calc(var(--card-w) * 0.0275);
   font-weight: 500;
   letter-spacing: 0.01em;
   overflow-wrap: anywhere;
 }
 
+.cred-copy {
+  grid-column: 3;
+  display: none;
+  place-items: center;
+  align-self: center;
+  position: relative;
+  width: calc(var(--card-w) * 0.05);
+  height: calc(var(--card-w) * 0.05);
+  margin-block: calc(var(--card-w) * -0.006);
+  padding: 0;
+  border: 0;
+  border-radius: calc(var(--card-w) * 0.014);
+  color: var(--muted);
+  background: none;
+  cursor: pointer;
+  transition:
+    color 0.18s ease,
+    background 0.18s ease,
+    transform 0.18s ease;
+}
+
+.gift-card.unlocked .cred-copy {
+  display: grid;
+}
+
+/*
+ * Widens the touch target sideways only. The credential rows sit close
+ * together, so growing these vertically would make the two hit areas overlap
+ * and the wrong row would answer the tap.
+ */
+.cred-copy::before {
+  content: "";
+  position: absolute;
+  inset: 0 calc(var(--card-w) * -0.024);
+}
+
+.cred-copy:hover,
+.cred-copy:focus-visible {
+  color: var(--berry);
+  background: #f2e3ca;
+}
+
+.cred-copy svg {
+  width: 68%;
+  height: 68%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  overflow: visible;
+}
+
+.cred-copy .icon-check {
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+}
+
+.cred-copy.is-copied {
+  color: #3f8f63;
+  background: #e3f0e6;
+  transform: scale(1.08);
+}
+
+.cred-copy.is-copied .icon-copy {
+  opacity: 0;
+}
+
+.cred-copy.is-copied .icon-check {
+  animation: copy-tick 0.32s ease-out forwards;
+}
+
+@keyframes copy-tick {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
 .cred-profile-label,
 .cred-profile-value {
   display: none;
+}
+
+.gift-card.unlocked .credentials {
+  row-gap: calc(var(--card-w) * 0.017);
 }
 
 .gift-card.unlocked .cred-profile-label,
@@ -305,6 +487,27 @@ h1 span {
 }
 
 .gift-card.unlocked .cred-hint {
+  display: none;
+}
+
+.report-link {
+  padding: 4px;
+  border: 0;
+  color: var(--cream);
+  background: none;
+  font: 500 clamp(0.74rem, 2.7vw, 0.84rem) "DM Sans", system-ui, sans-serif;
+  letter-spacing: 0.06em;
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+  opacity: 0.72;
+  cursor: pointer;
+}
+
+.report-link:hover {
+  opacity: 1;
+}
+
+.report-link[hidden] {
   display: none;
 }
 
@@ -352,6 +555,86 @@ h1 span {
 .prime-login-arrow {
   color: var(--blue);
   font-size: 1.05em;
+}
+
+/* ----------------------------------------------------------- the reveal */
+.card-sheen {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.card-sheen::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  bottom: -50%;
+  left: -65%;
+  width: 40%;
+  opacity: 0;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(255, 255, 255, 0.92),
+    transparent
+  );
+  transform: skewX(-18deg);
+}
+
+.gift-card.revealing .card-sheen::after {
+  animation: sheen 1.05s 0.1s ease-out;
+}
+
+@keyframes sheen {
+  0% {
+    left: -65%;
+    opacity: 0;
+  }
+
+  18%,
+  82% {
+    opacity: 1;
+  }
+
+  100% {
+    left: 125%;
+    opacity: 0;
+  }
+}
+
+/* Each credential lands in turn rather than all at once. */
+#username {
+  --row: 0;
+}
+
+#accountPassword {
+  --row: 1;
+}
+
+#profile {
+  --row: 2;
+}
+
+.gift-card.revealing .cred-value,
+.gift-card.revealing .cred-copy {
+  animation: value-in 0.5s calc(0.24s + var(--row, 0) * 0.11s) both ease-out;
+}
+
+.gift-card.revealing .cred-copy {
+  --row: 0.4;
+}
+
+@keyframes value-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5em);
+  }
+}
+
+.gift-card.revealing .prime-login {
+  animation: value-in 0.5s 0.6s both ease-out;
 }
 
 /* ----------------------------------------------------------- the dialogue */
@@ -405,7 +688,9 @@ h1 span {
 
 .close:focus-visible,
 .btn:focus-visible,
-.credentials:focus-visible,
+.cred-unlock:focus-visible,
+.cred-copy:focus-visible,
+.report-link:focus-visible,
 .prime-login:focus-visible {
   outline: 2px solid var(--berry);
   outline-offset: 2px;
@@ -574,5 +859,20 @@ h1 span {
   .prime-logo,
   .unlocked-details {
     transition: none;
+  }
+
+  .bow-layer {
+    display: none;
+  }
+
+  .page-head,
+  .page-foot,
+  .card-stage,
+  .gift-card.flipping,
+  .gift-card.revealing .card-sheen::after,
+  .gift-card.revealing .cred-value,
+  .gift-card.revealing .cred-copy,
+  .gift-card.revealing .prime-login {
+    animation: none;
   }
 }
