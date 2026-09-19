@@ -8,7 +8,7 @@ GitHub Pages can only publish files that actually exist on the selected branch. 
 
 To fix it:
 
-1. Merge the pull request containing this project into `main`, **or** upload `index.html`, `styles.css`, `script.js`, `README.md`, and `SETUP.md` to the root of `main`.
+1. Merge the pull request containing this project into `main`, **or** upload `index.html`, `styles.css`, `script.js`, `README.md`, and `SETUP.md` to the root of `main`, plus the `assets` folder (the ribbon, bow, and Prime Video artwork) at `/assets`.
 2. In **Settings → Pages**, select **Deploy from a branch**, `main`, and `/ (root)`, then click **Save**.
 3. Wait for the Pages deployment to finish and open `https://iamarasinghe96.github.io/bethday/`.
 

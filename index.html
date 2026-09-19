@@ -3,77 +3,91 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#b93453" />
+    <meta name="theme-color" content="#b63b50" />
     <title>A little something for Beth</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet" />
+    <link rel="preload" as="image" href="assets/card-art.svg" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <main class="page-shell">
-      <p class="eyebrow">A little something for</p>
-      <h1>Beth <span aria-hidden="true">♥</span></h1>
+      <header class="page-head">
+        <p class="eyebrow">A little something for</p>
+        <h1>Beth <span aria-hidden="true">♥</span></h1>
+      </header>
 
       <section class="card-stage" aria-label="Prime Video gift card">
-        <div class="gift-card" id="giftCard" role="button" tabindex="0" aria-label="Flip gift card" aria-pressed="false">
-          <span class="card-face card-front">
-            <span class="ribbon ribbon-horizontal"></span>
-            <span class="ribbon ribbon-vertical"></span>
-            <span class="bow" aria-hidden="true"><i></i></span>
-            <span class="gift-label">GIFT<br />CARD</span>
-            <span class="front-note">Tap to unwrap</span>
-          </span>
-          <span class="card-face card-back">
-            <span class="back-kicker">YOUR GIFT</span>
-            <span class="prime-logo"><b>prime</b> video</span>
-            <span class="smile" aria-hidden="true"></span>
-            <span class="credentials" id="credentials" role="button" tabindex="0">
-              <span>USERNAME <strong id="username">••••••••••••</strong></span>
-              <span>PASSWORD <strong id="accountPassword">••••••••</strong></span>
-              <small>Tap to view account details</small>
-            </span>
-            <span class="unlocked-details" id="unlockedDetails" aria-live="polite">
-              <a class="prime-login" id="primeLogin" href="https://www.amazon.com.au/ap/signin?openid.pape.max_auth_age=0&amp;openid.return_to=https%3A%2F%2Ffe.primevideo.com%2Fauth%2Freturn%3F_t%3D1sg8pihkSHI9hRGXbrYwIqm6G6Ox7RtdgdJ_um0ol-sFUCAAAAAQAAAABqrg5VcmF3AAAAAPgWC9WfHH8iB-olH_E9xQ%26ref_%3Dav_auth_ap%26location%3D%2F%3Fref_%253Datv_auth_pre&amp;openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&amp;openid.assoc_handle=amzn_prime_video_sso_aus&amp;openid.mode=checkid_setup&amp;countryCode=AU&amp;siteState=356-7994393-7486213&amp;language=en_US&amp;openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&amp;openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0" target="_blank" rel="noopener noreferrer">
-                Log into <span><b>prime</b> video</span> <i aria-hidden="true">↗</i>
-              </a>
-              <span class="profile-note">Use profile <strong id="profile">1</strong></span>
-            </span>
-          </span>
+        <div class="gift-card" id="giftCard" role="button" tabindex="0" aria-label="Flip the gift card" aria-pressed="false">
+          <div class="card-face card-front">
+            <img class="card-art" src="assets/card-art.svg" alt="" aria-hidden="true" />
+            <p class="gift-wordmark">Gift<br />Card</p>
+          </div>
+
+          <div class="card-face card-back">
+            <img class="card-art" src="assets/card-art.svg" alt="" aria-hidden="true" />
+
+            <div class="back-inner">
+              <img class="prime-logo" src="assets/prime-video.png" alt="Prime Video" width="960" height="296" />
+
+              <div class="back-details">
+                <button class="credentials" id="credentials" type="button" aria-label="Open your gift and reveal the account details">
+                  <span class="cred-label">Username</span>
+                  <span class="cred-value" id="username">••••••••••••</span>
+                  <span class="cred-label">Password</span>
+                  <span class="cred-value" id="accountPassword">••••••••</span>
+                  <span class="cred-label cred-profile-label">Profile</span>
+                  <span class="cred-value cred-profile-value" id="profile">1</span>
+                  <span class="cred-hint">Tap to open your gift</span>
+                </button>
+
+                <div class="unlocked-details" id="unlockedDetails">
+                  <a class="prime-login" id="primeLogin" href="https://www.amazon.com.au/ap/signin?openid.pape.max_auth_age=0&amp;openid.return_to=https%3A%2F%2Ffe.primevideo.com%2Fauth%2Freturn%3F_t%3D1sg8pihkSHI9hRGXbrYwIqm6G6Ox7RtdgdJ_um0ol-sFUCAAAAAQAAAABqrg5VcmF3AAAAAPgWC9WfHH8iB-olH_E9xQ%26ref_%3Dav_auth_ap%26location%3D%2F%3Fref_%253Datv_auth_pre&amp;openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&amp;openid.assoc_handle=amzn_prime_video_sso_aus&amp;openid.mode=checkid_setup&amp;countryCode=AU&amp;siteState=356-7994393-7486213&amp;language=en_US&amp;openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&amp;openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0" target="_blank" rel="noopener noreferrer">
+                    <span class="prime-login-text">Log in to Prime Video</span>
+                    <span class="prime-login-arrow" aria-hidden="true">↗</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      <p class="hint" id="hint">Tap the card to reveal your surprise</p>
-      <p class="signature">With Love, Guvani &amp; Indika</p>
+      <footer class="page-foot">
+        <p class="hint" id="hint" aria-live="polite">Tap the card to reveal your surprise</p>
+        <p class="signature">With love, Guvani &amp; Indika</p>
+      </footer>
     </main>
 
     <dialog class="modal" id="accountDialog" aria-labelledby="dialogTitle">
       <form method="dialog" class="dialog-card">
-        <button class="close" value="cancel" aria-label="Close">×</button>
-        <div class="heart-mark" aria-hidden="true">♥</div>
-        <h2 id="dialogTitle">Your Prime Video gift</h2>
-        <p id="dialogCopy">Choose what you’d like to do.</p>
+        <button class="close" value="cancel" aria-label="Close">&times;</button>
 
-        <div class="dialog-actions" id="choiceActions">
-          <button class="primary" id="revealButton" type="button">Reveal account details</button>
-          <button class="secondary" id="issueButton" type="button">Report an account issue</button>
+        <div class="dialog-head">
+          <div class="heart-mark" aria-hidden="true">♥</div>
+          <h2 id="dialogTitle">Your Prime Video gift</h2>
+          <p class="dialog-copy" id="dialogCopy">Choose what you&rsquo;d like to do.</p>
         </div>
 
-        <div class="password-panel" id="passwordPanel" hidden>
-          <label for="accessPassword">Enter your gift password</label>
-          <div class="input-row">
-            <input id="accessPassword" type="password" autocomplete="off" placeholder="Password" />
-            <button class="primary" id="submitPassword" type="button">Unlock</button>
-          </div>
+        <div class="panel dialog-actions" id="choiceActions">
+          <button class="btn btn-primary" id="revealButton" type="button" autofocus>Reveal account details</button>
+          <button class="btn btn-secondary" id="issueButton" type="button">Report an account issue</button>
+        </div>
+
+        <div class="panel password-panel" id="passwordPanel" hidden>
+          <label class="field-label" for="accessPassword">Enter your gift password</label>
+          <input class="field-input" id="accessPassword" type="password" autocomplete="off" placeholder="Gift password" />
           <p class="form-message" id="formMessage" role="status"></p>
-          <button class="text-button" id="backButton" type="button">← Back</button>
+          <button class="btn btn-primary" id="submitPassword" type="button">Unlock</button>
+          <button class="btn btn-quiet" id="backButton" type="button">&larr; Back</button>
         </div>
 
-        <div class="success-panel" id="successPanel" hidden>
-          <div class="success-icon">✓</div>
+        <div class="panel success-panel" id="successPanel" hidden>
+          <div class="success-icon" aria-hidden="true">✓</div>
           <h3 id="successTitle">All set!</h3>
-          <p id="successMessage"></p>
-          <button class="primary" value="close">Done</button>
+          <p class="dialog-copy" id="successMessage"></p>
+          <button class="btn btn-primary" value="close">Done</button>
         </div>
       </form>
     </dialog>
