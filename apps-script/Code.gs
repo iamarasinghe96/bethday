@@ -57,7 +57,7 @@ function sendIssueEmail_(spreadsheet, sheet) {
     new Date(), spreadsheet.getSpreadsheetTimeZone(), "d MMMM yyyy 'at' h:mm a");
 
   const plainBody =
-    'An account issue was reported from Beth’s gift card on ' + reportedAt + '.\n\n' +
+    'An account issue was reported from Beth\u2019s gift card on ' + reportedAt + '.\n\n' +
     'Open the Google Sheet:\n' + sheetUrl + '\n\n' +
     'Replace the username in A2 and the password in B2, update the profile in C2 ' +
     'if it changed, then type "solved" into D2. Beth sees the new details the next ' +
@@ -73,7 +73,7 @@ function sendIssueEmail_(spreadsheet, sheet) {
 
   MailApp.sendEmail({
     to: notificationAddress_(),
-    subject: 'Prime Video gift card — account issue',
+    subject: 'Prime Video gift card \u2014 account issue',
     body: plainBody,
     htmlBody: htmlBody
   });
